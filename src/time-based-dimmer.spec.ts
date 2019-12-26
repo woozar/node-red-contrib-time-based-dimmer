@@ -1,4 +1,4 @@
-import timeBasedDimmer from './time-based-dimmer'
+const timeBasedDimmer = require('./time-based-dimmer')
 
 const wait = (delay: number): Promise<void> => {
   return new Promise(resolve => {
@@ -61,7 +61,7 @@ describe('time based dimmer', () => {
   }
 
   beforeAll(() => {
-    timeBasedDimmer(redMock)
+    timeBasedDimmer(redMock as any)
   })
 
   it('registers a new type', () => {

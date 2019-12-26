@@ -1,7 +1,20 @@
-module.exports = function(RED) {
-  function TimeBasedDimmerNode(config) {
-    function tick(send, node) {
-      let newValue
+import { Red, Node, NodeProperties } from 'node-red';
+
+interface TimeBasedDimmerConfig extends NodeProperties {
+  interval: number
+  step: number
+  maxValue: number
+  minValue: number
+  startIncCommand: string
+  startDecCommand: string
+  stopIncCommand: string
+  stopDecCommand: string
+}
+
+module.exports = function(red: Red): void {
+  function TimeBasedDimmerNode(config: TimeBasedDimmerConfig) {
+    function tick(send: Function, node: Node) {
+      let newValue: number
       const oldValue = node.context().get('value') || 0
       if (node.context().get('mode') === 'inc') {
         newValue = oldValue + config.step
@@ -24,9 +37,9 @@ module.exports = function(RED) {
       send({ payload: newValue })
     }
     
-    RED.nodes.createNode(this, config);
+    red.nodes.createNode(this, config);
     var node = this;
-    node.on('input', (msg, send, done) => {
+    node.on('input', (msg: any, send: Function, done: Function) => {
       switch(typeof msg.payload) {
         case 'number':
           node.status({ fill:"grey", shape:"dot", text: msg.payload.toString() });
@@ -64,5 +77,5 @@ module.exports = function(RED) {
       }
     });
   }
-  RED.nodes.registerType("time-based-dimmer", TimeBasedDimmerNode);
+  red.nodes.registerType("time-based-dimmer", TimeBasedDimmerNode);
 }

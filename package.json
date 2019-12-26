@@ -1,0 +1,47 @@
+{
+  "name": "node-red-contrib-time-based-dimmer",
+  "version": "1.0.0",
+  "description": "A time based dimmer for node-red. It can be used to increase/descrease a numerical value where one event starts the process (like pressing a button) and another event (like releasing the button) stops it.",
+  "keywords": [
+    "node-red"
+  ],
+  "scripts": {
+    "test": "jest --runInBand --no-cache",
+    "test:watch": "jest --watch --runInBand --coverage --no-cache",
+    "test:cov": "jest --runInBand --coverage --no-cache"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "testRegex": "\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "coverage",
+    "testEnvironment": "node"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Woozinator/node-red-time-based-dimmer.git"
+  },
+  "author": "Johannes Herrmann (johannes.herrmann@12-of-spades.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Woozinator/node-red-time-based-dimmer/issues"
+  },
+  "homepage": "https://github.com/Woozinator/node-red-time-based-dimmer#readme",
+  "node-red": {
+    "nodes": {
+      "time-based-dimmer": "time-based-dimmer/time-based-dimmer.js"
+    }
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.24",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.2.0",
+    "typescript": "^3.7.4"
+  }
+}

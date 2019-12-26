@@ -1,0 +1,75 @@
+<script type="text/javascript">
+    RED.nodes.registerType('time-based-dimmer',{
+        category: 'function',
+        color: '#a6bbcf',
+        defaults: {
+            name: { value: "" },
+            interval: { value: 200, validate:RED.validators.number(), required: true },
+            step: { value: 5, validate:RED.validators.number(), required: true },
+            minValue: { value: 0, validate:RED.validators.number(), required: true },
+            maxValue: { value: 100, validate:RED.validators.number(), required: true },
+            startIncCommand: { value: "", required: true },
+            stopIncCommand: { value: "", required: true },
+            startDecCommand: { value: "", required: true },
+            stopDecCommand: { value: "", required: true }
+        },
+        inputs:1,
+        outputs:1,
+        icon: "timer.svg",
+        label: function() {
+            return this.name || "time-based-dimmer";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="time-based-dimmer">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-interval"><i class="icon-tag"></i> Interval [ms]</label>
+        <input type="text" id="node-input-interval" placeholder="Interval">
+    </div>
+    <div class="form-row">
+        <label for="node-input-step"><i class="icon-tag"></i> Step</label>
+        <input type="text" id="node-input-step" placeholder="Step">
+    </div>
+    <div class="form-row">
+        <label for="node-input-minValue"><i class="icon-tag"></i> MinValue</label>
+        <input type="text" id="node-input-minValue" placeholder="MinValue">
+    </div>
+    <div class="form-row">
+        <label for="node-input-maxValue"><i class="icon-tag"></i> MaxValue</label>
+        <input type="text" id="node-input-maxValue" placeholder="MaxValue">
+    </div>
+    <div class="form-row">
+        <label for="node-input-startIncCommand"><i class="icon-tag"></i> Start Increase Command</label>
+        <input type="text" id="node-input-startIncCommand" placeholder="Start Increase Command">
+    </div>
+    <div class="form-row">
+        <label for="node-input-stopIncCommand"><i class="icon-tag"></i> Stop Increase Command</label>
+        <input type="text" id="node-input-stopIncCommand" placeholder="Stop Increase Command">
+    </div>
+    <div class="form-row">
+        <label for="node-input-startDecCommand"><i class="icon-tag"></i> Start Decrease Command</label>
+        <input type="text" id="node-input-startDecCommand" placeholder="Start Decrease Command">
+    </div>
+    <div class="form-row">
+        <label for="node-input-stopDecCommand"><i class="icon-tag"></i> Stop Decrease Command</label>
+        <input type="text" id="node-input-stopDecCommand" placeholder="Stop Decrease Command">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="time-based-dimmer">
+    <p>A dimmer that will change its value based on the configured interval and limits using start / stop commands.</p>
+    <p>The node accepts two types of inputs. If the input is a number, the value of the node will be set to this number. If the value is a string, the value will be compared to the list of configured strings and the matching command will be executed. It is possible to use the same command to stop increase or decrease of the dimmer value.</p>
+    <p>Example: These commands are used by IKEA Tradfri Switch CB10 if the switch is attached using the zigbee2mqtt service. (They are stored in the .click property and need to be extracted first.)
+        <ul>
+            <li>startIncCommand: &quot;brightness_up&quot;</li>
+            <li>stopIncCommand: &quot;brightness_stop&quot;</li>
+            <li>startDecCommand: &quot;brightness_down&quot;</li>
+            <li>stopDecCommand: &quot;brightness_stop&quot;</li>
+        </ul>
+    </p>
+</script>

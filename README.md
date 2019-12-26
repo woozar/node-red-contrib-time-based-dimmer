@@ -42,3 +42,4 @@ After changing anything, please make sure the tests do still execute by running:
 Ideally you would also add tests for the changes you made.
 
 [1]:http://nodered.org
+

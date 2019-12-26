@@ -35,11 +35,11 @@ If you want to add changes to the code, please feel free but it would be nice if
 
 ### Automated Tests
 
-After changing anything, please make sure the tests do still execute by running:
+After changing anything, please make sure the [jest][2] tests do still execute by running:
 
     yarn test
 
 Ideally you would also add tests for the changes you made.
 
 [1]:http://nodered.org
-
+[2]:https://jestjs.io/

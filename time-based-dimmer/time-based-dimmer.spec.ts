@@ -30,6 +30,11 @@ describe('time based dimmer', () => {
   const types: { [name: string]: any } = {}
   const listeners: { [name: string]: Function[] } = {}
   let lastNode: any
+  let currentStatus: {
+    fill: string,
+    shape: string,
+    text: string
+  }
   const registerListener = (name: string, fn: Function) => {
     if (!listeners[name]) {
       listeners[name] = []
@@ -44,6 +49,9 @@ describe('time based dimmer', () => {
         obj.on = registerListener
         obj.context = () => contextMock
         obj.warn = jest.fn()
+        obj.status = jest.fn((obj) => {
+          currentStatus = obj
+        })
         expect(conf).toEqual(config)
       }),
       registerType: jest.fn((name, type) => {
@@ -84,6 +92,11 @@ describe('time based dimmer', () => {
     beforeEach(async () => {
       handleSend = jest.fn((v: any) => { currentVal = v.payload })
       await sendPayload(15)
+      expect(currentStatus).toEqual({
+        fill: 'grey',
+        shape: 'dot',
+        text: '15'
+      })
     })
 
     it('creates a new instance', () => {
@@ -100,6 +113,11 @@ describe('time based dimmer', () => {
       await wait(125)
       await sendPayload('brightness_stop');
       expect(currentVal).toEqual(25);
+      expect(currentStatus).toEqual({
+        fill: 'grey',
+        shape: 'dot',
+        text: '25'
+      })
       expect(handleSend).toHaveBeenCalledTimes(3)
       await wait(50)
       expect(currentVal).toEqual(25);
@@ -111,6 +129,11 @@ describe('time based dimmer', () => {
       await wait(75)
       await sendPayload('brightness_stop');
       expect(currentVal).toEqual(10);
+      expect(currentStatus).toEqual({
+        fill: 'grey',
+        shape: 'dot',
+        text: '10'
+      })
       expect(handleSend).toHaveBeenCalledTimes(2)
     })
 

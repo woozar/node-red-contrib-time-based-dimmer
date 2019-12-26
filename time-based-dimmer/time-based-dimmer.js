@@ -1,25 +1,26 @@
 module.exports = function(RED) {
   function TimeBasedDimmerNode(config) {
-    function tick(send, context) {
+    function tick(send, node) {
       let newValue
-      const oldValue = context.get('value') || 0
-      if (context.get('mode') === 'inc') {
+      const oldValue = node.context().get('value') || 0
+      if (node.context().get('mode') === 'inc') {
         newValue = oldValue + config.step
         if (newValue > config.maxValue) {
-          clearInterval(context.get('timer'));
-          context.set('timer', null)
+          clearInterval(node.context().get('timer'));
+          node.context().set('timer', null)
           newValue = config.maxValue;
         }
       } else {
         newValue = oldValue - config.step
         if (newValue < config.minValue) {
-          clearInterval(context.get('timer'));
-          context.set('timer', null)
+          clearInterval(node.context().get('timer'));
+          node.context().set('timer', null)
           newValue = config.minValue;
         }
       }
-      if (context.get('value') === newValue) return
-      context.set('value', newValue)
+      if (node.context().get('value') === newValue) return
+      node.status({ fill:"grey", shape:"dot", text: newValue.toString() });
+      node.context().set('value', newValue)
       send({ payload: newValue })
     }
     
@@ -28,6 +29,7 @@ module.exports = function(RED) {
     node.on('input', (msg, send, done) => {
       switch(typeof msg.payload) {
         case 'number':
+          node.status({ fill:"grey", shape:"dot", text: msg.payload.toString() });
           node.context().set('value', msg.payload)
           send(msg)
         break
@@ -37,12 +39,12 @@ module.exports = function(RED) {
             case config.startIncCommand:
               if (timer) break
               node.context().set('mode', 'inc')
-              node.context().set('timer', setInterval(() => tick(send, node.context()), config.interval));
+              node.context().set('timer', setInterval(() => tick(send, node), config.interval));
             break
             case config.startDecCommand:
               if (timer) break
               node.context().set('mode', 'dec')
-              node.context().set('timer', setInterval(() => tick(send, node.context()), config.interval));
+              node.context().set('timer', setInterval(() => tick(send, node), config.interval));
             break
             case config.stopIncCommand:
             case config.stopDecCommand:

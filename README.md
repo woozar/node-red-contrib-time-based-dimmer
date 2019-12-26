@@ -1,6 +1,6 @@
 # Node-Red time based dimmer
 
-This node allows to add a dimmer to your [node-red][1] that will be triggered by start and stop commands. It was originally designed to work with the IKEA Tradfri Switch CB10 which was connected over mqtt using zigbee2mqtt. We will ignore the "simple clicks" and only take a look at the dimming. When holding one of the keys down, it will trigger "brightness_up" or "brightness_down" and after releasing the button, it will trigger "brightness_stop".
+This node allows to add a dimmer to your [node-red][1] that will be triggered by start and stop commands. It was originally designed to work with the IKEA Tradfri Switch CB10 which was connected over mqtt using zigbee2mqtt. We will ignore the "simple clicks" and only take a look at the dimming. When holding one of the keys down, it will trigger "brightness_up" or "brightness_down" and after releasing the button, it will trigger "brightness_stop". This dimmer will &quot;catch&quot; these commands and change its value based on how long the button is being pressed.
 
 ## Install 
 
@@ -14,7 +14,7 @@ or run command for global installation.
 
 ## Usage
 
-The node can be used rather similar to the slider from the dashboard. It will use any numerical value it gets as its current state. The main difference is that it will also accept some commands. The keywords for the commands are configurable.
+The node can be used rather similar to the slider from the dashboard. It will use any numerical value it gets as its current state. The main difference is that it will also accept some commands. The keywords for the commands are configurable. The commands will trigger the dimmers value to increase or decrease over time. The only thing left to do is connect the output of the dimmer to the brightness of a light.
 
 ## Settings 
 

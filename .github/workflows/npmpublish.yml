@@ -24,10 +24,10 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
+      - run: rm -rf .gitignore
       - run: yarn --frozen-lockfile --production=false
       - run: yarn build
       - run: yarn --frozen-lockfile --production=true
-      - run: rm -rf ./src
       - run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

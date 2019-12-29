@@ -17,7 +17,7 @@ class Context {
 
 describe('time based dimmer', () => {
   const config = {
-    step: 5,
+    step: 5 as any,
     minValue: 0,
     maxValue: 30,
     interval: 50,
@@ -122,6 +122,24 @@ describe('time based dimmer', () => {
       await wait(50)
       expect(currentVal).toEqual(25)
       expect(handleSend).toHaveBeenCalledTimes(3)
+    })
+
+    it('can handle the step property from the config as string', async () => {
+      config.step = '7'
+      try {
+        await sendPayload('brightness_up')
+        await wait(75)
+        await sendPayload('brightness_stop')
+        expect(currentVal).toEqual(22)
+        expect(currentStatus).toEqual({
+          fill: 'grey',
+          shape: 'dot',
+          text: '22'
+        })
+        expect(handleSend).toHaveBeenCalledTimes(2)
+      } finally {
+        config.step = 5
+      }
     })
 
     it('starts and stops the dimmer down', async () => {

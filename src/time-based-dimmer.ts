@@ -15,16 +15,17 @@ interface TimeBasedDimmerConfig extends NodeProperties {
 module.exports = (red: Red): void => {
   function tick(send: Function, node: Node, config: TimeBasedDimmerConfig) {
     let newValue: number
+    const step = typeof config.step === 'string' ? parseInt(config.step, 10) : config.step
     const oldValue = node.context().get('value') || 0
     if (node.context().get('mode') === 'inc') {
-      newValue = oldValue + config.step
+      newValue = oldValue + step
       if (newValue > config.maxValue) {
         clearInterval(node.context().get('timer'))
         node.context().set('timer', null)
         newValue = config.maxValue
       }
     } else {
-      newValue = oldValue - config.step
+      newValue = oldValue - step
       if (newValue < config.minValue) {
         clearInterval(node.context().get('timer'))
         node.context().set('timer', null)

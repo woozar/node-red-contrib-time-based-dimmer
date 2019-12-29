@@ -2,7 +2,7 @@ import { Context } from './tools/context'
 import { wait } from './tools/wait'
 
 // eslint-disable-next-line import/no-unresolved
-const timeBasedDimmer = require('./time-based-dimmer')
+const oneButtonDimmer = require('./one-button-dimmer')
 
 describe('time based dimmer', () => {
   const config = {
@@ -10,10 +10,8 @@ describe('time based dimmer', () => {
     minValue: 0,
     maxValue: 30,
     interval: 50,
-    startIncCommand: 'brightness_up',
-    stopIncCommand: 'brightness_stop',
-    startDecCommand: 'brightness_down',
-    stopDecCommand: 'brightness_stop'
+    startCommand: 'long',
+    stopCommand: 'long_release'
   }
   const types: { [name: string]: any } = {}
   const listeners: { [name: string]: Function[] } = {}
@@ -49,11 +47,11 @@ describe('time based dimmer', () => {
   }
 
   beforeAll(() => {
-    timeBasedDimmer(redMock as any)
+    oneButtonDimmer(redMock as any)
   })
 
   it('registers a new type', () => {
-    expect(types).toHaveProperty('time-based-dimmer')
+    expect(types).toHaveProperty('one-button-dimmer')
   })
 
   describe('instance', () => {
@@ -61,7 +59,7 @@ describe('time based dimmer', () => {
     let handleSend: Function
 
     beforeAll(() => {
-      types['time-based-dimmer'](config)
+      types['one-button-dimmer'](config)
     })
 
     async function sendPayload(payload: any): Promise<void> {
@@ -86,6 +84,7 @@ describe('time based dimmer', () => {
         shape: 'dot',
         text: '15'
       })
+      contextMock.set('mode', '')
     })
 
     it('creates a new instance', () => {
@@ -98,9 +97,9 @@ describe('time based dimmer', () => {
     })
 
     it('starts and stops the dimmer up', async () => {
-      await sendPayload(config.startIncCommand)
+      await sendPayload(config.startCommand)
       await wait(125)
-      await sendPayload('brightness_stop')
+      await sendPayload(config.stopCommand)
       expect(currentVal).toEqual(25)
       expect(currentStatus).toEqual({
         fill: 'grey',
@@ -116,9 +115,9 @@ describe('time based dimmer', () => {
     it('can handle the step property from the config as string', async () => {
       config.step = '7'
       try {
-        await sendPayload(config.startIncCommand)
+        await sendPayload(config.startCommand)
         await wait(75)
-        await sendPayload('brightness_stop')
+        await sendPayload(config.stopCommand)
         expect(currentVal).toEqual(22)
         expect(currentStatus).toEqual({
           fill: 'grey',
@@ -132,9 +131,11 @@ describe('time based dimmer', () => {
     })
 
     it('starts and stops the dimmer down', async () => {
-      await sendPayload('brightness_down')
+      await sendPayload(config.startCommand)
+      await sendPayload(config.stopCommand)
+      await sendPayload(config.startCommand)
       await wait(75)
-      await sendPayload('brightness_stop')
+      await sendPayload(config.stopCommand)
       expect(currentVal).toEqual(10)
       expect(currentStatus).toEqual({
         fill: 'grey',
@@ -145,82 +146,61 @@ describe('time based dimmer', () => {
     })
 
     it('reaches the upper limit', async () => {
-      await sendPayload(config.startIncCommand)
+      await sendPayload(config.startCommand)
       await wait(225)
-      expect(currentVal).toEqual(30)
-      expect(handleSend).toHaveBeenCalledTimes(4)
-      await sendPayload(config.stopIncCommand)
       expect(currentVal).toEqual(30)
       expect(handleSend).toHaveBeenCalledTimes(4)
     })
 
     it('reaches the lower limit', async () => {
-      await sendPayload(config.startDecCommand)
+      await sendPayload(config.startCommand)
+      await sendPayload(config.stopCommand)
+      await sendPayload(config.startCommand)
       await wait(225)
-      expect(currentVal).toEqual(0)
-      expect(handleSend).toHaveBeenCalledTimes(4)
-      await sendPayload(config.stopDecCommand)
       expect(currentVal).toEqual(0)
       expect(handleSend).toHaveBeenCalledTimes(4)
     })
 
     it('ignores unknown commands', async () => {
-      await sendPayload('bright_up')
+      await sendPayload('start')
       await wait(75)
       expect(currentVal).toEqual(15)
       expect(handleSend).toHaveBeenCalledTimes(1)
       expect(lastNode.log).toHaveBeenCalledTimes(1)
     })
 
-    it('ignores duplicate start Inc commands', async () => {
-      await sendPayload(config.startIncCommand)
-      await sendPayload(config.startIncCommand)
+    it('ignores duplicate start commands', async () => {
+      await sendPayload(config.startCommand)
+      await sendPayload(config.startCommand)
       await wait(75)
       expect(currentVal).toEqual(20)
       expect(handleSend).toHaveBeenCalledTimes(2)
-      await sendPayload(config.stopIncCommand)
-    })
-
-    it('ignores duplicate start Dec commands', async () => {
-      await sendPayload(config.startDecCommand)
-      await sendPayload(config.startDecCommand)
-      await wait(75)
-      expect(currentVal).toEqual(10)
-      expect(handleSend).toHaveBeenCalledTimes(2)
-      await sendPayload(config.stopDecCommand)
-    })
-
-    it('ignores duplicate start mixed commands', async () => {
-      await sendPayload(config.startDecCommand)
-      await sendPayload(config.startIncCommand)
-      await wait(75)
-      expect(currentVal).toEqual(10)
-      expect(handleSend).toHaveBeenCalledTimes(2)
-      await sendPayload(config.stopDecCommand)
+      await sendPayload(config.stopCommand)
     })
 
     it('ignores duplicate stop commands', async () => {
-      await sendPayload(config.startDecCommand)
+      await sendPayload(config.startCommand)
       await wait(75)
-      expect(currentVal).toEqual(10)
+      expect(currentVal).toEqual(20)
       expect(handleSend).toHaveBeenCalledTimes(2)
-      await sendPayload(config.stopDecCommand)
-      await sendPayload(config.stopDecCommand)
-      expect(currentVal).toEqual(10)
+      await sendPayload(config.stopCommand)
+      await sendPayload(config.stopCommand)
+      expect(currentVal).toEqual(20)
       expect(handleSend).toHaveBeenCalledTimes(2)
     })
 
     it('is backwards compatible', async () => {
-      listeners.input[0]({ payload: config.startDecCommand }, handleSend)
+      listeners.input[0]({ payload: config.startCommand }, handleSend)
       await wait(75)
-      await sendPayload(config.stopDecCommand)
-      expect(currentVal).toEqual(10)
+      await sendPayload(config.stopCommand)
+      expect(currentVal).toEqual(20)
       expect(handleSend).toHaveBeenCalledTimes(2)
     })
 
     it('ignores unknown payloads', async () => {
       await sendPayload(true)
       await wait(75)
+      await sendPayload(config.stopCommand)
       expect(currentVal).toEqual(15)
       expect(handleSend).toHaveBeenCalledTimes(1)
     })

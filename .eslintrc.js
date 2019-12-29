@@ -15,6 +15,9 @@ module.exports = {
     sourceType: 'module'
   },
   rules: {
-    semi: [2, 'never']
+    semi: [2, 'never'],
+    'import/prefer-default-export': false,
+    'import/extensions': [2, 'never'],
+    'import/no-unresolved': 0
   }
 }

@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RED.nodes.registerType('time-based-dimmer',{
+    RED.nodes.registerType('one-button-dimmer',{
         category: 'function',
         color: '#a6bbcf',
         defaults: {
@@ -8,21 +8,19 @@
             step: { value: 5, validate:RED.validators.number(), required: true },
             minValue: { value: 0, validate:RED.validators.number(), required: true },
             maxValue: { value: 100, validate:RED.validators.number(), required: true },
-            startIncCommand: { value: "", required: true },
-            stopIncCommand: { value: "", required: true },
-            startDecCommand: { value: "", required: true },
-            stopDecCommand: { value: "", required: true }
+            startCommand: { value: "", required: true },
+            stopCommand: { value: "", required: true }
         },
         inputs: 1,
         outputs: 1,
         icon: "timer.svg",
         label: function() {
-            return this.name || "2-button-dimmer";
+            return this.name || "1-button-dimmer";
         }
     });
 </script>
 
-<script type="text/x-red" data-template-name="time-based-dimmer">
+<script type="text/x-red" data-template-name="one-button-dimmer">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -44,32 +42,22 @@
         <input type="text" id="node-input-maxValue" placeholder="MaxValue">
     </div>
     <div class="form-row">
-        <label for="node-input-startIncCommand"><i class="icon-tag"></i> Start Increase Command</label>
-        <input type="text" id="node-input-startIncCommand" placeholder="Start Increase Command">
+        <label for="node-input-startCommand"><i class="icon-tag"></i> Start Command</label>
+        <input type="text" id="node-input-startCommand" placeholder="Start Command">
     </div>
     <div class="form-row">
-        <label for="node-input-stopIncCommand"><i class="icon-tag"></i> Stop Increase Command</label>
-        <input type="text" id="node-input-stopIncCommand" placeholder="Stop Increase Command">
-    </div>
-    <div class="form-row">
-        <label for="node-input-startDecCommand"><i class="icon-tag"></i> Start Decrease Command</label>
-        <input type="text" id="node-input-startDecCommand" placeholder="Start Decrease Command">
-    </div>
-    <div class="form-row">
-        <label for="node-input-stopDecCommand"><i class="icon-tag"></i> Stop Decrease Command</label>
-        <input type="text" id="node-input-stopDecCommand" placeholder="Stop Decrease Command">
+        <label for="node-input-stopCommand"><i class="icon-tag"></i> Stop Command</label>
+        <input type="text" id="node-input-stopCommand" placeholder="Stop Command">
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="time-based-dimmer">
-    <p>A dimmer that will change its value based on the configured interval and limits using start / stop commands.</p>
+<script type="text/x-red" data-help-name="one-button-dimmer">
+    <p>A dimmer that will change its value based on the configured interval and limits using start / stop commands. When keeping a button pressed it will alternate between increasing and decreasing the value.</p>
     <p>The node accepts two types of inputs. If the input is a number, the value of the node will be set to this number. If the value is a string, the value will be compared to the list of configured strings and the matching command will be executed. It is possible to use the same command to stop increase or decrease of the dimmer value.</p>
-    <p>Example: These commands are used by IKEA Tradfri Switch CB10 if the switch is attached using the zigbee2mqtt service. (They are stored in the .click property and need to be extracted first.)
+    <p>Example: These commands are used by Xiaomi Aqara switch if the switch is attached using the zigbee2mqtt service. (They are stored in the .click property and need to be extracted first.)
         <ul>
-            <li>Start Increase Command: &quot;brightness_up&quot;</li>
-            <li>Stop Increase Command: &quot;brightness_stop&quot;</li>
-            <li>Start Decrease Command: &quot;brightness_down&quot;</li>
-            <li>Stop Decrease Command: &quot;brightness_stop&quot;</li>
+            <li>Start Command: &quot;long&quot;</li>
+            <li>Stop Command: &quot;long_release&quot;</li>
         </ul>
     </p>
 </script>

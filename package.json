@@ -40,7 +40,8 @@
   "homepage": "https://github.com/Woozinator/node-red-time-based-dimmer#readme",
   "node-red": {
     "nodes": {
-      "time-based-dimmer": "dist/time-based-dimmer.js"
+      "time-based-dimmer": "dist/time-based-dimmer.js",
+      "one-button-dimmer": "dist/one-button-dimmer.js"
     }
   },
   "devDependencies": {

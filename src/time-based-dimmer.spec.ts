@@ -1,16 +1,15 @@
+// eslint-disable-next-line import/no-unresolved
 const timeBasedDimmer = require('./time-based-dimmer')
 
-const wait = (delay: number): Promise<void> => {
-  return new Promise(resolve => {
-    setTimeout(resolve, delay);
-  })
-}
+const wait = (delay: number): Promise<void> => new Promise(resolve => setTimeout(resolve, delay))
 
 class Context {
   values: { [key: string]: any } = {}
+
   get(key: string): any {
     return this.values[key]
   }
+
   set(key: string, value: any): void {
     this.values[key] = value
   }
@@ -31,8 +30,8 @@ describe('time based dimmer', () => {
   const listeners: { [name: string]: Function[] } = {}
   let lastNode: any
   let currentStatus: {
-    fill: string,
-    shape: string,
+    fill: string
+    shape: string
     text: string
   }
   const registerListener = (name: string, fn: Function) => {
@@ -45,12 +44,12 @@ describe('time based dimmer', () => {
   const redMock = {
     nodes: {
       createNode: jest.fn((obj, conf) => {
-        lastNode = obj;
-        obj.on = registerListener
-        obj.context = () => contextMock
-        obj.warn = jest.fn()
-        obj.status = jest.fn((obj) => {
-          currentStatus = obj
+        lastNode = obj
+        lastNode.on = registerListener
+        lastNode.context = () => contextMock
+        lastNode.log = jest.fn()
+        lastNode.status = jest.fn((o: any) => {
+          currentStatus = o
         })
         expect(conf).toEqual(config)
       }),
@@ -71,14 +70,14 @@ describe('time based dimmer', () => {
   describe('instance', () => {
     let currentVal: any
     let handleSend: Function
-  
+
     beforeAll(() => {
       types['time-based-dimmer'](config)
     })
 
     async function sendPayload(payload: any): Promise<void> {
       return new Promise((resolve, reject) => {
-        listeners['input'][0]({ payload }, handleSend, (err: Error) => {
+        listeners.input[0]({ payload }, handleSend, (err: Error) => {
           if (err) {
             reject(err)
           } else {
@@ -88,9 +87,10 @@ describe('time based dimmer', () => {
       })
     }
 
-
     beforeEach(async () => {
-      handleSend = jest.fn((v: any) => { currentVal = v.payload })
+      handleSend = jest.fn((v: any) => {
+        currentVal = v.payload
+      })
       await sendPayload(15)
       expect(currentStatus).toEqual({
         fill: 'grey',
@@ -104,15 +104,15 @@ describe('time based dimmer', () => {
     })
 
     it('accepts a number as current value', () => {
-      expect(currentVal).toEqual(15);
+      expect(currentVal).toEqual(15)
       expect(handleSend).toHaveBeenCalledTimes(1)
     })
 
     it('starts and stops the dimmer up', async () => {
-      await sendPayload('brightness_up');
+      await sendPayload('brightness_up')
       await wait(125)
-      await sendPayload('brightness_stop');
-      expect(currentVal).toEqual(25);
+      await sendPayload('brightness_stop')
+      expect(currentVal).toEqual(25)
       expect(currentStatus).toEqual({
         fill: 'grey',
         shape: 'dot',
@@ -120,15 +120,15 @@ describe('time based dimmer', () => {
       })
       expect(handleSend).toHaveBeenCalledTimes(3)
       await wait(50)
-      expect(currentVal).toEqual(25);
+      expect(currentVal).toEqual(25)
       expect(handleSend).toHaveBeenCalledTimes(3)
     })
 
     it('starts and stops the dimmer down', async () => {
-      await sendPayload('brightness_down');
+      await sendPayload('brightness_down')
       await wait(75)
-      await sendPayload('brightness_stop');
-      expect(currentVal).toEqual(10);
+      await sendPayload('brightness_stop')
+      expect(currentVal).toEqual(10)
       expect(currentStatus).toEqual({
         fill: 'grey',
         shape: 'dot',
@@ -138,84 +138,84 @@ describe('time based dimmer', () => {
     })
 
     it('reaches the upper limit', async () => {
-      await sendPayload('brightness_up');
+      await sendPayload('brightness_up')
       await wait(225)
-      expect(currentVal).toEqual(30);
+      expect(currentVal).toEqual(30)
       expect(handleSend).toHaveBeenCalledTimes(4)
-      await sendPayload('brightness_stop');
-      expect(currentVal).toEqual(30);
+      await sendPayload('brightness_stop')
+      expect(currentVal).toEqual(30)
       expect(handleSend).toHaveBeenCalledTimes(4)
     })
 
     it('reaches the lower limit', async () => {
-      await sendPayload('brightness_down');
+      await sendPayload('brightness_down')
       await wait(225)
-      expect(currentVal).toEqual(0);
+      expect(currentVal).toEqual(0)
       expect(handleSend).toHaveBeenCalledTimes(4)
-      await sendPayload('brightness_stop');
-      expect(currentVal).toEqual(0);
+      await sendPayload('brightness_stop')
+      expect(currentVal).toEqual(0)
       expect(handleSend).toHaveBeenCalledTimes(4)
     })
 
     it('ignores unknown commands', async () => {
-      await sendPayload('bright_up');
+      await sendPayload('bright_up')
       await wait(75)
-      expect(currentVal).toEqual(15);
+      expect(currentVal).toEqual(15)
       expect(handleSend).toHaveBeenCalledTimes(1)
-      expect(lastNode.warn).toHaveBeenCalledTimes(1)
+      expect(lastNode.log).toHaveBeenCalledTimes(1)
     })
 
     it('ignores duplicate start Inc commands', async () => {
-      await sendPayload('brightness_up');
-      await sendPayload('brightness_up');
+      await sendPayload('brightness_up')
+      await sendPayload('brightness_up')
       await wait(75)
-      expect(currentVal).toEqual(20);
+      expect(currentVal).toEqual(20)
       expect(handleSend).toHaveBeenCalledTimes(2)
-      await sendPayload('brightness_stop');
+      await sendPayload('brightness_stop')
     })
 
     it('ignores duplicate start Dec commands', async () => {
-      await sendPayload('brightness_down');
-      await sendPayload('brightness_down');
+      await sendPayload('brightness_down')
+      await sendPayload('brightness_down')
       await wait(75)
-      expect(currentVal).toEqual(10);
+      expect(currentVal).toEqual(10)
       expect(handleSend).toHaveBeenCalledTimes(2)
-      await sendPayload('brightness_stop');
+      await sendPayload('brightness_stop')
     })
 
     it('ignores duplicate start mixed commands', async () => {
-      await sendPayload('brightness_down');
-      await sendPayload('brightness_up');
+      await sendPayload('brightness_down')
+      await sendPayload('brightness_up')
       await wait(75)
-      expect(currentVal).toEqual(10);
+      expect(currentVal).toEqual(10)
       expect(handleSend).toHaveBeenCalledTimes(2)
-      await sendPayload('brightness_stop');
+      await sendPayload('brightness_stop')
     })
 
     it('ignores duplicate stop commands', async () => {
-      await sendPayload('brightness_down');
+      await sendPayload('brightness_down')
       await wait(75)
-      expect(currentVal).toEqual(10);
+      expect(currentVal).toEqual(10)
       expect(handleSend).toHaveBeenCalledTimes(2)
-      await sendPayload('brightness_stop');
-      await sendPayload('brightness_stop');
-      expect(currentVal).toEqual(10);
+      await sendPayload('brightness_stop')
+      await sendPayload('brightness_stop')
+      expect(currentVal).toEqual(10)
       expect(handleSend).toHaveBeenCalledTimes(2)
     })
 
     it('is backwards compatible', async () => {
-      listeners['input'][0]({ payload: 'brightness_down' }, handleSend)
+      listeners.input[0]({ payload: 'brightness_down' }, handleSend)
       await wait(75)
-      await sendPayload('brightness_stop');
-      expect(currentVal).toEqual(10);
+      await sendPayload('brightness_stop')
+      expect(currentVal).toEqual(10)
       expect(handleSend).toHaveBeenCalledTimes(2)
     })
 
     it('ignores unknown payloads', async () => {
-      await sendPayload(true);
+      await sendPayload(true)
       await wait(75)
-      await sendPayload('brightness_stop');
-      expect(currentVal).toEqual(15);
+      await sendPayload('brightness_stop')
+      expect(currentVal).toEqual(15)
       expect(handleSend).toHaveBeenCalledTimes(1)
     })
   })

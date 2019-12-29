@@ -9,7 +9,11 @@
     "test": "jest --runInBand --no-cache",
     "test:watch": "jest --watch --runInBand --coverage --no-cache",
     "test:cov": "jest --runInBand --coverage --no-cache",
-    "build": "tsc && cp ./src/*.html ./dist/"
+    "build": "tsc && cp ./src/*.html ./dist/",
+    "prettier": "prettier --config '.prettierrc.js' './**/*.{js,ts,tsx}'",
+    "prettier:update": "yarn run prettier --write",
+    "lint": "tsc --noEmit && yarn run prettier -l && eslint 'src/**/*.{js,ts,tsx}'",
+    "lint:fix": "eslint 'src/**/*.{js,ts,tsx}' --fix && yarn run prettier:update"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -42,7 +46,15 @@
   "devDependencies": {
     "@types/jest": "^24.0.24",
     "@types/node-red": "^0.20.1",
+    "@typescript-eslint/eslint-plugin": "^2.13.0",
+    "@typescript-eslint/parser": "^2.13.0",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-prettier": "^3.1.2",
     "jest": "^24.9.0",
+    "prettier": "^1.19.1",
     "ts-jest": "^24.2.0",
     "typescript": "^3.7.4"
   }

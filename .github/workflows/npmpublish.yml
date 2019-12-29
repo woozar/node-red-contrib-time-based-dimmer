@@ -26,12 +26,12 @@ jobs:
           node-version: 12
           registry-url: https://registry.npmjs.org/
       - run: echo ${GITHUB_REF}
-      - run: echo ${GITHUB_REF#}
-      - run: echo ${GITHUB_REF#refs}
+      - run: echo ${GITHUB_REF#"refs/tags"}
+      - run: echo ${GITHUB_REF#"refs/tags/"}
       - run: rm -rf .gitignore
       - run: yarn --frozen-lockfile --production=false
       - run: yarn build
       - run: yarn --frozen-lockfile --production=true
-      - run: yarn publish --new-version ${GITHUB_REF#"refs/tags"}
+      - run: yarn publish --new-version ${GITHUB_REF#"refs/tags/"}
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

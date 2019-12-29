@@ -31,9 +31,6 @@ jobs:
       - run: yarn --frozen-lockfile --production=true
       - run: git config user.name "Build Bot"
       - run: git config user.email "build@bot.com"
-      - run: yarn --frozen-lockfile --production=true
-
-      - run: yarn version --new-version ${GITHUB_REF#"refs/tags/"}
-      - run: yarn publish
+      - run: yarn publish --new-version ${GITHUB_REF#"refs/tags/"}
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

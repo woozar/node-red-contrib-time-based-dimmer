@@ -30,7 +30,9 @@ jobs:
       - run: yarn build
       - run: yarn --frozen-lockfile --production=true
       - run: yarn version --new-version ${GITHUB_REF#"refs/tags/"}
-      - run: cat package.json
       - run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          GIT_COMMITTER_NAME: "Build bot"
+          GIT_COMMITTER_EMAIL: "build@bot.com"
+          EMAIL: "build@bot.com"

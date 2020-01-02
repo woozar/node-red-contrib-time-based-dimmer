@@ -1,11 +1,9 @@
 // eslint-disable-next-line import/no-unresolved, no-unused-vars
-import { Red, Node, NodeProperties } from 'node-red'
+import { Red, Node } from 'node-red'
+// eslint-disable-next-line no-unused-vars
+import { fixBrokenConfig, TimeBasedDimmerConfig } from './time-based-dimmer-config'
 
-interface TimeBasedDimmerConfig extends NodeProperties {
-  interval: number
-  step: number
-  maxValue: number
-  minValue: number
+interface TwoButtonDimmerConfig extends TimeBasedDimmerConfig {
   startIncCommand: string
   startDecCommand: string
   stopIncCommand: string
@@ -13,19 +11,18 @@ interface TimeBasedDimmerConfig extends NodeProperties {
 }
 
 module.exports = (red: Red): void => {
-  function tick(send: Function, node: Node, config: TimeBasedDimmerConfig) {
+  function tick(send: Function, node: Node, config: TwoButtonDimmerConfig) {
     let newValue: number
-    const step = typeof config.step === 'string' ? parseInt(config.step, 10) : config.step
     const oldValue = node.context().get('value') || 0
     if (node.context().get('mode') === 'inc') {
-      newValue = oldValue + step
+      newValue = oldValue + config.step
       if (newValue > config.maxValue) {
         clearInterval(node.context().get('timer'))
         node.context().set('timer', null)
         newValue = config.maxValue
       }
     } else {
-      newValue = oldValue - step
+      newValue = oldValue - config.step
       if (newValue < config.minValue) {
         clearInterval(node.context().get('timer'))
         node.context().set('timer', null)
@@ -39,7 +36,8 @@ module.exports = (red: Red): void => {
   }
 
   class TimeBasedDimmerNode {
-    constructor(config: TimeBasedDimmerConfig) {
+    constructor(config: TwoButtonDimmerConfig) {
+      fixBrokenConfig(config)
       red.nodes.createNode(this as any, config)
       const node: Node = this as any
       node.on('input', (msg: any, send: Function, done: Function) => {

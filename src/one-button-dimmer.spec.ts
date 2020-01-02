@@ -112,24 +112,6 @@ describe('time based dimmer', () => {
       expect(handleSend).toHaveBeenCalledTimes(3)
     })
 
-    it('can handle the step property from the config as string', async () => {
-      config.step = '7'
-      try {
-        await sendPayload(config.startCommand)
-        await wait(75)
-        await sendPayload(config.stopCommand)
-        expect(currentVal).toEqual(22)
-        expect(currentStatus).toEqual({
-          fill: 'grey',
-          shape: 'dot',
-          text: '22'
-        })
-        expect(handleSend).toHaveBeenCalledTimes(2)
-      } finally {
-        config.step = 5
-      }
-    })
-
     it('starts and stops the dimmer down', async () => {
       await sendPayload(config.startCommand)
       await sendPayload(config.stopCommand)

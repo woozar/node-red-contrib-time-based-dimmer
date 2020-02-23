@@ -2,6 +2,8 @@
 
 This node allows to add a dimmer to your [node-red][1] that will be triggered by start and stop commands. It was originally designed to work with the IKEA Tradfri Switch CB10 which was connected over mqtt using zigbee2mqtt. We will ignore the "simple clicks" and only take a look at the dimming. When holding one of the keys down, it will trigger "brightness_up" or "brightness_down" and after releasing the button, it will trigger "brightness_stop". This dimmer will &quot;catch&quot; these commands and change its value based on how long the button is being pressed.
 
+In version 0.5.0 a second node called &quot;one-button-dimmer&quot; was added. The one button dimmer works pretty much like the time-based-dimmer but it does not require different commands to dimm brighter or darker but it will use the same button (and the same commands) to take turns of turning the light brighter or darker. This can for example be used with the round Xiaomi Aqara switch.
+
 ## Install 
 
 Run command on Node-RED installation directory.
@@ -28,6 +30,10 @@ There are several required settings in the node.
   * Stop Increase Command: The dimmer will keep its state
   * Start Decrease Command: The dimmer will start to decrease its value
   * Stop Decrease Command: The dimmer will keep its state
+
+The one button dimmer has slightly simpler settings as there are only two commands.
+* Start Command: The dimmer will start to increase or decrease its value
+* Stop Command: The dimmer will keep its state
 
 ## For developers
 

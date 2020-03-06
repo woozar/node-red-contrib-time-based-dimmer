@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-time-based-dimmer",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "A time based dimmer for node-red. It can be used to increase/descrease a numerical value where one event starts the process (like pressing a button) and another event (like releasing the button) stops it.",
   "keywords": [
     "node-red"
@@ -15,6 +15,9 @@
     "lint": "tsc --noEmit && yarn run prettier -l && eslint 'src/**/*.{js,ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{js,ts,tsx}' --fix && yarn run prettier:update"
   },
+  "files": [
+    "dist"
+  ],
   "jest": {
     "moduleFileExtensions": [
       "js",

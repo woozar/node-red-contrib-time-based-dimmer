@@ -3,6 +3,9 @@ import { Red, Node } from 'node-red'
 // eslint-disable-next-line no-unused-vars
 import { TimeBasedDimmerConfig } from './time-based-dimmer-config'
 
+const MODE_INC = 'inc'
+const MODE_DEC = 'dec'
+
 interface OneButtonDimmerConfig extends TimeBasedDimmerConfig {
   startCommand: string
   stopCommand: string
@@ -15,7 +18,7 @@ module.exports = (red: Red): void => {
     if (typeof oldValue === 'string') {
       oldValue = Number.parseInt(oldValue, 10)
     }
-    if (node.context().get('mode') === 'inc') {
+    if (node.context().get('mode') === MODE_INC) {
       newValue = oldValue + config.step
       if (newValue > config.maxValue) {
         clearInterval(node.context().get('timer'))
@@ -59,7 +62,7 @@ module.exports = (red: Red): void => {
               case config.startCommand:
                 if (timer) break
                 currentMode = node.context().get('mode')
-                node.context().set('mode', currentMode === 'inc' ? 'dec' : 'inc')
+                node.context().set('mode', currentMode === MODE_INC ? MODE_DEC : MODE_INC)
                 node.context().set(
                   'timer',
                   setInterval(() => tick(send, node, config), config.interval)
@@ -72,6 +75,16 @@ module.exports = (red: Red): void => {
                 break
               default:
                 node.log(`missing command "${msg.payload}"`)
+            }
+            break
+          case 'object':
+            // eslint-disable-next-line no-case-declarations
+            let { next } = msg.payload
+            if (next && typeof next === 'string') {
+              next = next.toLowerCase()
+              if (next === MODE_INC || next === MODE_DEC) {
+                node.context().set('mode', next)
+              }
             }
             break
           default:

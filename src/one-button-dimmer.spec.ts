@@ -54,6 +54,80 @@ describe('time based dimmer', () => {
     expect(types).toHaveProperty('one-button-dimmer')
   })
 
+  describe('config param wrong type', () => {
+    let currentVal: any
+    let handleSend: Function
+
+    beforeAll(() => {
+      types['one-button-dimmer']({
+        step: '5',
+        minValue: 0,
+        maxValue: 30,
+        interval: 50,
+        startCommand: 'long',
+        stopCommand: 'long_release'
+      })
+    })
+
+    async function sendPayload(payload: any): Promise<void> {
+      return new Promise((resolve, reject) => {
+        listeners.input[0]({ payload }, handleSend, (err: Error) => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve()
+          }
+        })
+      })
+    }
+
+    beforeEach(async () => {
+      handleSend = jest.fn((v: any) => {
+        currentVal = v.payload
+      })
+      await sendPayload(15)
+      expect(currentStatus).toEqual({
+        fill: 'grey',
+        shape: 'dot',
+        text: '15'
+      })
+      contextMock.set('mode', '')
+    })
+
+    it('starts and stops the dimmer up', async () => {
+      await sendPayload(config.startCommand)
+      await wait(125)
+      await sendPayload(config.stopCommand)
+      expect(currentVal).toEqual(25)
+      expect(currentStatus).toEqual({
+        fill: 'grey',
+        shape: 'dot',
+        text: '25'
+      })
+      expect(handleSend).toHaveBeenCalledTimes(3)
+      await wait(50)
+      expect(currentVal).toEqual(25)
+      expect(handleSend).toHaveBeenCalledTimes(3)
+    })
+
+    it('handles current value as string', async () => {
+      lastNode.context().set('value', '15')
+      await sendPayload(config.startCommand)
+      await wait(125)
+      await sendPayload(config.stopCommand)
+      expect(currentVal).toEqual(25)
+      expect(currentStatus).toEqual({
+        fill: 'grey',
+        shape: 'dot',
+        text: '25'
+      })
+      expect(handleSend).toHaveBeenCalledTimes(3)
+      await wait(50)
+      expect(currentVal).toEqual(25)
+      expect(handleSend).toHaveBeenCalledTimes(3)
+    })
+  })
+
   describe('instance', () => {
     let currentVal: any
     let handleSend: Function
@@ -112,9 +186,13 @@ describe('time based dimmer', () => {
       expect(handleSend).toHaveBeenCalledTimes(3)
     })
 
+    it('ignores invalid next values', async () => {
+      await sendPayload({ next: 5 })
+      await sendPayload({ next: 'horst' })
+    })
+
     it('starts and stops the dimmer down', async () => {
-      await sendPayload(config.startCommand)
-      await sendPayload(config.stopCommand)
+      await sendPayload({ next: 'dec' })
       await sendPayload(config.startCommand)
       await wait(75)
       await sendPayload(config.stopCommand)
@@ -123,6 +201,22 @@ describe('time based dimmer', () => {
         fill: 'grey',
         shape: 'dot',
         text: '10'
+      })
+      expect(handleSend).toHaveBeenCalledTimes(2)
+    })
+
+    it('starts, resets and restarts the dimmer up', async () => {
+      await sendPayload(config.startCommand)
+      await sendPayload(config.stopCommand)
+      await sendPayload({ next: 'inc' })
+      await sendPayload(config.startCommand)
+      await wait(75)
+      await sendPayload(config.stopCommand)
+      expect(currentVal).toEqual(20)
+      expect(currentStatus).toEqual({
+        fill: 'grey',
+        shape: 'dot',
+        text: '20'
       })
       expect(handleSend).toHaveBeenCalledTimes(2)
     })

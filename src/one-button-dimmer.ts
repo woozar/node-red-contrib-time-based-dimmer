@@ -80,11 +80,9 @@ module.exports = (red: Red): void => {
           case 'object':
             // eslint-disable-next-line no-case-declarations
             let { next } = msg.payload
-            if (next && typeof next === 'string') {
+            if (typeof next === 'string') {
               next = next.toLowerCase()
-              if (next === MODE_INC || next === MODE_DEC) {
-                node.context().set('mode', next)
-              }
+              node.context().set('mode', next === MODE_INC ? MODE_DEC : MODE_INC)
             }
             break
           default:

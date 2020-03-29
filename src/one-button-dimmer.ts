@@ -11,7 +11,10 @@ interface OneButtonDimmerConfig extends TimeBasedDimmerConfig {
 module.exports = (red: Red): void => {
   function tick(send: Function, node: Node, config: OneButtonDimmerConfig) {
     let newValue: number
-    const oldValue = node.context().get('value') || 0
+    let oldValue = node.context().get('value') || 0
+    if (typeof oldValue === 'string') {
+      oldValue = Number.parseInt(oldValue, 10)
+    }
     if (node.context().get('mode') === 'inc') {
       newValue = oldValue + config.step
       if (newValue > config.maxValue) {
@@ -35,6 +38,10 @@ module.exports = (red: Red): void => {
 
   class TimeBasedDimmerNode {
     constructor(config: OneButtonDimmerConfig) {
+      if (typeof config.step === 'string') {
+        // eslint-disable-next-line no-param-reassign
+        config.step = Number.parseInt(config.step, 10)
+      }
       red.nodes.createNode(this as any, config)
       const node: Node = this as any
       node.on('input', (msg: any, send: Function, done: Function) => {

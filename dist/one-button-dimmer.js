@@ -4,6 +4,9 @@ module.exports = function (red) {
     function tick(send, node, config) {
         var newValue;
         var oldValue = node.context().get('value') || 0;
+        if (typeof oldValue === 'string') {
+            oldValue = Number.parseInt(oldValue, 10);
+        }
         if (node.context().get('mode') === 'inc') {
             newValue = oldValue + config.step;
             if (newValue > config.maxValue) {
@@ -28,6 +31,9 @@ module.exports = function (red) {
     }
     var TimeBasedDimmerNode = (function () {
         function TimeBasedDimmerNode(config) {
+            if (typeof config.step === 'string') {
+                config.step = Number.parseInt(config.step, 10);
+            }
             red.nodes.createNode(this, config);
             var node = this;
             node.on('input', function (msg, send, done) {

@@ -35,6 +35,10 @@ The one button dimmer has slightly simpler settings as there are only two comman
 * Start Command: The dimmer will start to increase or decrease its value
 * Stop Command: The dimmer will keep its state
 
+## Additional possible inputs
+
+* Any value of type "number" will be used to overwrite the current value
+
 ## For developers
 
 If you want to add changes to the code, please feel free but it would be nice if you created a pull request if the feature would be useful to other users.
